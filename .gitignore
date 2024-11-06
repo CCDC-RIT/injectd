@@ -1,3 +1,4 @@
 # ignore all diagram files and temporary files
 *.drawio
 *.drawio.*
+*.csv

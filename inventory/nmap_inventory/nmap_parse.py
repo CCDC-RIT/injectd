@@ -9,8 +9,9 @@ Requirements: python-nmap package
 import nmap
 
 def single_host(host_ip):
+    print(f"Starting single host scan of {host_ip}, this may take a minute...")
     nm = nmap.PortScanner()
-    nm.scan(host_ip,'22-443') #'22-443'
+    nm.scan(host_ip,'22-1000') #'22-443'
     #nm.command_line() # nmap -oX - -p 22-443 -sV 127.0.0.1'
     return nm
 
@@ -21,7 +22,7 @@ def network_scan():
     for host, status in hosts_list:
         print('{0}:{1}'.host)
 
-def export_to_file(portscanner,file = 'nmap_results.csv'):
+def export_to_file(portscanner,file = "nmap_results.csv"):
     #scanner = nmap.PortScanner()
     #scanner.scan(target, ports)
     with open(file, 'w') as file:
@@ -40,8 +41,8 @@ def export_to_file(portscanner,file = 'nmap_results.csv'):
     """
 
 def main():
-    print("Starting")
     scanner = single_host("127.0.0.1")
     print(scanner.csv())
+    export_to_file(scanner)
 
 main()
