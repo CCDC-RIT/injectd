@@ -7,20 +7,47 @@ Requirements: python-nmap package
 """
 
 import nmap
+import socket
+import ifaddr
 
-def single_host(host_ip):
+# Returns the best guess at the device's IP and netmask.
+# Requires device to have a valid non-127 and non-169 IPv4 address active.
+# May not work on devices with multiple valid IP addresses active (only first one will be returned)
+def get_current_network_info():
+    adapters = ifaddr.get_adapters()
+
+    for adapter in adapters:
+        for ip in adapter.ips:
+            if ip.is_IPv4:
+                if ip.ip.split(".")[0] != "127" and ip.ip.split(".")[0] != "169": #not routable so ignore
+                    #return f"{ip}"
+                    return f"{ip.ip}/{ip.network_prefix}"
+                    """
+                    return {
+                        'interface': adapter.nice_name,
+                        'ip': ip.ip,
+                        'netmask': ip.network_prefix
+                    }
+                    """
+
+def single_host(host_ip="127.0.0.1"):
     print(f"Starting single host scan of {host_ip}, this may take a minute...")
     nm = nmap.PortScanner()
     nm.scan(host_ip,'22-1000') #'22-443'
     #nm.command_line() # nmap -oX - -p 22-443 -sV 127.0.0.1'
     return nm
 
-def network_scan():
+def network_scan(network_to_scan = get_current_network_info()):
+    print(f"Starting network scan of {network_to_scan}, this may take a minute...")
     nm = nmap.PortScanner()
-    nm.scan(hosts='192.168.1.0/24', arguments='-n -sP -PE -PA21,23,80,3389')
+    nm.scan(hosts=network_to_scan, arguments='-n -sP -PE -PA 20-500') #host identify up/down
     hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
+    online_hosts = []
     for host, status in hosts_list:
         print('{0}:{1}'.host)
+        if status == "up":
+            online_hosts.append(host)
+    return nm
 
 def export_to_file(portscanner,file = "nmap_results.csv"):
     #scanner = nmap.PortScanner()
@@ -41,8 +68,17 @@ def export_to_file(portscanner,file = "nmap_results.csv"):
     """
 
 def main():
-    scanner = single_host("127.0.0.1")
+
+    #single host example
+    ip = "127.0.0.1"
+    scanner = single_host(ip)
     print(scanner.csv())
-    export_to_file(scanner)
+    export_to_file(scanner,f"nmap_results_{ip}.csv")
+
+    #network example
+    ip = get_current_network_info()
+    scanner = network_scan(ip)
+    print(scanner.csv())
+    export_to_file(scanner,f"nmap_results_{ip}.csv")
 
 main()
