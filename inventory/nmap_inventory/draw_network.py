@@ -1,8 +1,32 @@
 import os
 import drawpyo
+import csv
 
-# Misc stuff that only needs to run once at the beginning
-def draw_network():
+# Parse the input file. Returns a list of dictionaries (one dictionary per host)
+def parse_input(file = "nmap_results.csv"):
+    hosts = []
+    with open(file, 'r') as file:
+        reader = csv.reader(file, delimiter=';')
+     
+        # Define column headers (in case you need them for processing or reference)
+        headers = [
+            "host", "hostname", "hostname_type", "protocol", "port",
+            "name", "state", "product", "extrainfo", "reason",
+            "version", "conf", "cpe"
+        ]
+
+        # Parse each line and print or process the fields
+        for row in reader:
+            # Ensure the row has the correct number of fields
+            if len(row) == len(headers):
+                # Create a dictionary for easier field access (optional)
+                entry = dict(zip(headers, row))
+                hosts.append(entry)
+
+    return hosts
+
+# Do the draw.
+def draw_network(info):
     ####################################
     ############ SETUP #################
     ####################################
@@ -12,7 +36,7 @@ def draw_network():
 
     file = drawpyo.File()
     file.file_path = os.getcwd()
-    file.file_name = 'yuh.drawio'
+    file.file_name = 'network_diagram.drawio'
 
     text = drawpyo.diagram.text_format.TextFormat(
         fontColor='#000000',
@@ -60,6 +84,7 @@ def draw_network():
     file.write()
 
 def main():
-
+    hosts = parse_input()
+    draw_network(hosts)
 
 main()
