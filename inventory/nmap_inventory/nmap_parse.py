@@ -186,24 +186,24 @@ def export_dict_to_file(scan_results, filename="nmap_results.csv"):
                         ip_address, hostname, os_family, os_gen, os_accuracy, 
                         "", "", "", "", "", "", ""
                     ])
-        else:
-            # Handle case with no OS information but has port information
-            for port_info in host_info["ports"]:
-                row = [
-                    ip_address,
-                    hostname,
-                    "",
-                    "",
-                    "",
-                    port_info["protocol"],
-                    port_info["port"],
-                    port_info["state"],
-                    port_info["service"],
-                    port_info.get("version", ""),
-                    port_info.get("product", ""),
-                    port_info.get("extra_info", "")
-                ]
-                writer.writerow(row)
+            else:
+                # Handle case with no OS information but has port information
+                for port_info in host_info["ports"]:
+                    row = [
+                        ip_address,
+                        hostname,
+                        "",
+                        "",
+                        "",
+                        port_info["protocol"],
+                        port_info["port"],
+                        port_info["state"],
+                        port_info["service"],
+                        port_info.get("version", ""),
+                        port_info.get("product", ""),
+                        port_info.get("extra_info", "")
+                    ]
+                    writer.writerow(row)
 
 def export_to_file(portscanner,file = "nmap_results.csv"):
     file = file.replace("/","-") #sanitize
