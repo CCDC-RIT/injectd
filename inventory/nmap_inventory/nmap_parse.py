@@ -3,7 +3,7 @@ Author: Andrew
 
 Description: uses nmap_python
 
-Requirements: python-nmap package
+Requirements: python-nmap package, ifaddr
 """
 
 import nmap
@@ -33,11 +33,12 @@ def get_current_network_info():
 def single_host(host_ip="127.0.0.1"):
     print(f"Starting single host scan of {host_ip}, this may take a minute...")
     nm = nmap.PortScanner()
-    nm.scan(host_ip,'22-1000') #'22-443'
+    nm.scan(host_ip,arguments="-O") #'22-443'
     #nm.command_line() # nmap -oX - -p 22-443 -sV 127.0.0.1'
     return nm
 
 def get_online_hosts(network_to_scan = get_current_network_info()):
+    # we could prob just replace this with nm.scan() and then nm.all_hosts()
     nm = nmap.PortScanner()
     nm.scan(hosts=network_to_scan, arguments='-n -sP -PE -PA 20-500') #host identify up/down
     hosts_list = [(x, nm[x]['status']['state']) for x in nm.all_hosts()]
@@ -50,14 +51,16 @@ def get_online_hosts(network_to_scan = get_current_network_info()):
 
 def network_scan(network_to_scan = get_current_network_info()):
     print(f"Starting network scan of {network_to_scan}, this may take a minute...")
-    hosts = get_online_hosts()
+    hosts = get_online_hosts(network_to_scan)
     nm = nmap.PortScanner()
     #nm.scan(hosts=network_to_scan, arguments='-n -sP -PE -PA 20-500') #host identify up/down
     for host_ip in hosts:
         nm.scan(host_ip,'22-1000')
+    nm.scan(hosts,'22-1000')
     return nm
 
 def export_to_file(portscanner,file = "nmap_results.csv"):
+    file = file.replace("/","-") #sanitize
     #scanner = nmap.PortScanner()
     #scanner.scan(target, ports)
     with open(file, 'w') as file:
@@ -80,13 +83,14 @@ def main():
     #single host example
     ip = "127.0.0.1"
     scanner = single_host(ip)
-    print(scanner.csv())
-    export_to_file(scanner,f"nmap_results_{ip}.csv")
+    print(scanner["osmatch"])
+    #print(scanner.csv())
+    #export_to_file(scanner,f"nmap_results_{ip}.csv")
 
     #network example
-    ip = get_current_network_info()
-    scanner = network_scan(ip)
-    print(scanner.csv())
-    export_to_file(scanner,f"nmap_results_{ip}.csv")
+    #ip = get_current_network_info()
+    #scanner = network_scan(ip)
+    #print(scanner.csv())
+    #export_to_file(scanner,f"nmap_results_{ip}.csv")
 
 main()
