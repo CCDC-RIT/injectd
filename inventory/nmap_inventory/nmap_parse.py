@@ -137,6 +137,7 @@ def parse_portscanner(nm):
 
 # Given the dict from parse_portscanner(), write it as a CSV to a file.
 def export_dict_to_file(scan_results, filename="nmap_results.csv"):
+    file = file.replace("/","-") #sanitize if called with subnet mask
     # Define the headers for the CSV file
     headers = [
         "IP Address", "Hostname", "OS Family", "OS Gen", "OS Accuracy", 
@@ -206,7 +207,7 @@ def export_dict_to_file(scan_results, filename="nmap_results.csv"):
                     writer.writerow(row)
 
 def export_to_file(portscanner,file = "nmap_results.csv"):
-    file = file.replace("/","-") #sanitize
+    file = file.replace("/","-") #sanitize if called with subnet mask
     #scanner = nmap.PortScanner()
     #scanner.scan(target, ports)
     with open(file, 'w') as file:
