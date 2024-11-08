@@ -7,7 +7,7 @@ import math
 def parse_input(file = "nmap_results.csv"):
     hosts = []
     with open(file, 'r') as file:
-        reader = csv.reader(file, delimiter=';')
+        reader = csv.reader(file, delimiter=',') #delimiter=';'
      
         # Define column headers (in case you need them for processing or reference)
         """
@@ -17,12 +17,12 @@ def parse_input(file = "nmap_results.csv"):
             "version", "conf", "cpe"
         ]
         """
-        headers = ["host","hostname","hostname_type","protocol","port","name","state","product","extrainfo","reason","version","conf","cpe"]
-
+        #headers = ["host","hostname","hostname_type","protocol","port","name","state","product","extrainfo","reason","version","conf","cpe"]
+        headers = ["IP Address","Hostname","OS Family","OS Gen","OS Accuracy","Protocol","Port","State","Service","Version","Product","Extra Info"]
         # Parse each line and print or process the fields
         for row in reader:
             # Ensure the row has the correct number of fields
-            print(f"len(row): {len(row)}, len(headers): {len(headers)}")
+            #print(f"len(row): {len(row)}, len(headers): {len(headers)}")
             if len(row) == len(headers):
                 # Create a dictionary for easier field access (optional)
                 entry = dict(zip(headers, row))
@@ -30,7 +30,7 @@ def parse_input(file = "nmap_results.csv"):
             else:
                 print(f"Unexpected row count on row: {row}")
 
-    print(hosts)
+    #print(hosts)
     return hosts
 
 # Do the draw.
@@ -88,12 +88,12 @@ def draw_network(hosts):
     columns = math.ceil(hosts_count / rows)
 
     items = []
-    for host in hosts:
+    for host in hosts[1:]: # first element is just the names (so hostname = hostname)
         item = drawpyo.diagram.object_from_library(
             library=custom_library,
-            obj_name='windows',
+            obj_name='ubuntu',
             text_format=text,
-            value=f'{host["host"]}', #\n for new line
+            value=f'{host["Hostname"]}\n{host["IP Address"]}', #\n for new line
             page=page,
             width=100,
             height=50
@@ -128,7 +128,7 @@ def draw_network(hosts):
     file.write()
 
 def main():
-    hosts = parse_input("nmap_results_10.0.10.0-24.csv")
+    hosts = parse_input("nmap_results_127.0.0.1.csv")
     draw_network(hosts)
 
 main()
