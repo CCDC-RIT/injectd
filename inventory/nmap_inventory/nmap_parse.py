@@ -59,7 +59,8 @@ def network_scan(network_to_scan = get_current_network_info()):
     #nm.scan(hosts=network_to_scan, arguments='-n -sP -PE -PA 20-500') #host identify up/down
     #for host_ip in hosts:
         #nm.scan(host_ip,'22-1000')
-    nm.scan(network_to_scan,"-sS -sU -O -sV -T4 -Pn --open")
+    #nm.scan(hosts=network_to_scan,arguments="-sS -sU -O -sV -T4 -Pn --open")
+    nm.scan(hosts=network_to_scan,arguments="-sS -sU -O -sV -T5 -Pn --open -p 1-1000") #faster
     """
     -sS: Performs a TCP SYN scan to check for open TCP ports.
     -sU: Performs a UDP scan to check for open UDP ports.
@@ -136,7 +137,7 @@ def parse_portscanner(nm):
     return scan_results
 
 # Given the dict from parse_portscanner(), write it as a CSV to a file.
-def export_dict_to_file(scan_results, filename="nmap_results.csv"):
+def export_dict_to_file(scan_results, file="nmap_results.csv"):
     file = file.replace("/","-") #sanitize if called with subnet mask
     # Define the headers for the CSV file
     headers = [
@@ -145,7 +146,7 @@ def export_dict_to_file(scan_results, filename="nmap_results.csv"):
     ]
     
     # Open a new CSV file for writing
-    with open(filename, mode="w", newline="") as csv_file:
+    with open(file, mode="w", newline="") as csv_file:
         writer = csv.writer(csv_file)
         
         # Write the headers to the CSV file
@@ -260,7 +261,7 @@ def main():
     #network example
     #ip = get_current_network_info()
     ip = "10.0.10.0/24"
-    scanner = network_scan(ip)
+    #scanner = network_scan(ip)
     #print(scanner.csv())
     #export_to_file(scanner,f"nmap_results_{ip}.csv")
     results_dict = parse_portscanner(scanner)
