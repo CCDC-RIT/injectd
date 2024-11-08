@@ -1,2 +1,0 @@
-host;hostname;hostname_type;protocol;port;name;state;product;extrainfo;reason;version;conf;cpe
-127.0.0.1;localhost;PTR;tcp;631;ipp;open;;;syn-ack;;3;

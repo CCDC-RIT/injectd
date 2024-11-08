@@ -17,16 +17,20 @@ def parse_input(file = "nmap_results.csv"):
             "version", "conf", "cpe"
         ]
         """
-        headers = ["host","protocol","port","name","state","product","extrainfo","reason","version","conf"]
+        headers = ["host","hostname","hostname_type","protocol","port","name","state","product","extrainfo","reason","version","conf","cpe"]
 
         # Parse each line and print or process the fields
         for row in reader:
             # Ensure the row has the correct number of fields
+            print(f"len(row): {len(row)}, len(headers): {len(headers)}")
             if len(row) == len(headers):
                 # Create a dictionary for easier field access (optional)
                 entry = dict(zip(headers, row))
                 hosts.append(entry)
+            else:
+                print(f"Unexpected row count on row: {row}")
 
+    print(hosts)
     return hosts
 
 # Do the draw.
@@ -89,7 +93,7 @@ def draw_network(hosts):
             library=custom_library,
             obj_name='windows',
             text_format=text,
-            value=f'{host[host]}', #\n for new line
+            value=f'{host["host"]}', #\n for new line
             page=page,
             width=100,
             height=50
@@ -110,13 +114,13 @@ def draw_network(hosts):
     )
     row_index, col_index = 0, 0
     for index,item in enumerate(items,start=1):
-        col_index += 1
-        if col_index > columns:
-            col_index = 0
-            row_index += 1
         parent_container.add_object(item)
-        item.position_rel_to_parent = ((col_index * 50), (row_index * 50))
+        item.position_rel_to_parent = ((col_index * 100), (row_index * 100))
         # 4 items: (30, 0) (150, 0) (30, 100) (150, 100)
+        row_index += 1
+        if row_index > rows - 1:
+            row_index = 0
+            col_index += 1
     parent_container.resize_to_children()
     #parent_container.position = (50, 65)
     parent_container.position = (0, 0)
