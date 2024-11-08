@@ -124,7 +124,7 @@ def draw_network(hosts):
     file.write()
 
 def main():
-    hosts = parse_input()
+    hosts = parse_input("nmap_results_10.0.10.0-24.csv")
     draw_network(hosts)
 
 main()

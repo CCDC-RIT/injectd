@@ -47,6 +47,7 @@ def get_online_hosts(network_to_scan = get_current_network_info()):
         #print('{0}:{1}'.host)
         if status == "up":
             online_hosts.append(host)
+    print(f"Online hosts: {online_hosts}")
     return online_hosts
 
 def network_scan(network_to_scan = get_current_network_info()):
@@ -54,9 +55,9 @@ def network_scan(network_to_scan = get_current_network_info()):
     hosts = get_online_hosts(network_to_scan)
     nm = nmap.PortScanner()
     #nm.scan(hosts=network_to_scan, arguments='-n -sP -PE -PA 20-500') #host identify up/down
-    for host_ip in hosts:
-        nm.scan(host_ip,'22-1000')
-    nm.scan(hosts,'22-1000')
+    #for host_ip in hosts:
+        #nm.scan(host_ip,'22-1000')
+    nm.scan(network_to_scan,'22-1000')
     return nm
 
 def export_to_file(portscanner,file = "nmap_results.csv"):
@@ -83,14 +84,15 @@ def main():
     #single host example
     ip = "127.0.0.1"
     scanner = single_host(ip)
-    print(scanner["osmatch"])
-    #print(scanner.csv())
-    #export_to_file(scanner,f"nmap_results_{ip}.csv")
+    #print(scanner["osmatch"])
+    print(scanner.csv())
+    export_to_file(scanner,f"nmap_results_{ip}.csv")
 
     #network example
     #ip = get_current_network_info()
-    #scanner = network_scan(ip)
-    #print(scanner.csv())
-    #export_to_file(scanner,f"nmap_results_{ip}.csv")
+    ip = "10.0.10.0/24"
+    scanner = network_scan(ip)
+    print(scanner.csv())
+    export_to_file(scanner,f"nmap_results_{ip}.csv")
 
 main()
