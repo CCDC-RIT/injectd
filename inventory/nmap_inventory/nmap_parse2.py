@@ -253,14 +253,14 @@ def main():
     #export_to_file(scanner,f"nmap_results_{ip}.csv")
 
     #hybrid
-    ip = "127.0.0.1"
-    scanner = network_scan(ip)
-    results_dict = parse_portscanner(scanner)
-    export_dict_to_file(results_dict,f"nmap_results_{ip}.csv")
+    #ip = "127.0.0.1"
+    #scanner = network_scan(ip)
+    #results_dict = parse_portscanner(scanner)
+    #export_dict_to_file(results_dict,f"nmap_results_{ip}.csv")
 
     #network example
     #ip = get_current_network_info()
-    ip = "10.0.10.0/24"
+    ip = "10.0.10.126/29"
     scanner = network_scan(ip)
     #print(scanner.csv())
     #export_to_file(scanner,f"nmap_results_{ip}.csv")
