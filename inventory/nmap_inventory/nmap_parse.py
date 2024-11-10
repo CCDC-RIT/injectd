@@ -10,6 +10,7 @@ import nmap
 import socket
 import ifaddr
 import csv
+import sys
 
 # Returns the best guess at the device's IP and netmask.
 # Requires device to have a valid non-127 and non-169 IPv4 address active.
@@ -247,20 +248,29 @@ def main():
 
     #single host example
     #ip = "127.0.0.1"
+    #ip = sys.argv[1]
     #scanner = single_host(ip)
     #print(scanner["osmatch"])
     #print(scanner.csv())
     #export_to_file(scanner,f"nmap_results_{ip}.csv")
 
     #hybrid
-    ip = "127.0.0.1"
+    if len(sys.argv) > 1:
+        ip = sys.argv[1]
+    else:
+        ip = "127.0.0.1"
+    #ip = "127.0.0.1"
     scanner = network_scan(ip)
     results_dict = parse_portscanner(scanner)
     export_dict_to_file(results_dict,f"nmap_results_{ip}.csv")
 
     #network example
     #ip = get_current_network_info()
-    ip = "10.0.10.0/24"
+    #ip = "10.0.10.0/24"
+    if len(sys.argv) > 2:
+        ip = sys.argv[2]
+    else:
+        ip = get_current_network_info()
     scanner = network_scan(ip)
     #print(scanner.csv())
     #export_to_file(scanner,f"nmap_results_{ip}.csv")
