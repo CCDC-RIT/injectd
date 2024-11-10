@@ -2,6 +2,7 @@ import os
 import drawpyo
 import csv
 import math
+import sys
 
 # Parse the input file. Returns a list of dictionaries (one dictionary per host)
 def parse_input(file = "nmap_results.csv"):
@@ -128,7 +129,11 @@ def draw_network(hosts):
     file.write()
 
 def main():
-    hosts = parse_input("nmap_results_127.0.0.1.csv")
+    if len(sys.argv) > 1:
+        file = sys.argv[1]
+    else:
+        file = "nmap_results_127.0.0.1.csv"
+    hosts = parse_input(file)
     draw_network(hosts)
 
 main()
