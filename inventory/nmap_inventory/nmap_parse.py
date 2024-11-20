@@ -61,7 +61,8 @@ def network_scan(network_to_scan = get_current_network_info()):
     #for host_ip in hosts:
         #nm.scan(host_ip,'22-1000')
     #nm.scan(hosts=network_to_scan,arguments="-sS -sU -O -sV -T4 -Pn --open")
-    nm.scan(hosts=network_to_scan,arguments="-sS -sU -O -sV -T5 -Pn --open -p 1-1000") #faster
+    #nm.scan(hosts=network_to_scan,arguments="-sS -sU -O -sV -T5 -Pn --open -p 1-1000") #faster
+    nm.scan(hosts=network_to_scan,arguments="-sS -T5 --open -p 1-1000 --retries 1500")
     """
     -sS: Performs a TCP SYN scan to check for open TCP ports.
     -sU: Performs a UDP scan to check for open UDP ports.
@@ -69,6 +70,9 @@ def network_scan(network_to_scan = get_current_network_info()):
     -sV: Enables service version detection to identify the version of services running on each open port.
     -T4: Sets the timing template to speed up the scan (1 is slowest, 5 is fastest). T4 is a good balance between speed and accuracy.
     -Pn: Disables pinging hosts to treat all IPs as alive, useful for networks where ICMP is blocked.
+    --open only lists open ports in the results
+
+    default behavior: SYN scan on tcp and udp 1-1024
     """
     return nm
 

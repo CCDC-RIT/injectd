@@ -34,8 +34,40 @@ def parse_input(file = "nmap_results.csv"):
     #print(hosts)
     return hosts
 
+def draw_network(custom_library,text,page,hosts):
+    """
+    we want to arrange the hosts in a pretty equal way
+    prefer going longer vertically when possible because there's prob lots of subnets
+    1 host: 1 row
+    2 hosts: 2 rows (1 column)
+    3 hosts: 2 rows (2 columns)
+    4 hosts: 2 rows (2 columns)
+    5 hosts: 2 rows (3 columns)
+    6 hosts: 2 rows (3 columns)
+    7 hosts: 3 rows (3 columns)
+    8 hosts: 3 rows (3 columns)
+    9 hosts: 3 rows (3 columns)
+    10 hosts: 4 rows (3 columns)
+    11 hosts: 4 rows (3 columns)
+    """
+
+    items = []
+    for host in hosts[1:]: # first element is just the names (so hostname = hostname)
+        item = drawpyo.diagram.object_from_library(
+            library=custom_library,
+            obj_name='ubuntu',
+            text_format=text,
+            value=f'{host["Hostname"]}\n{host["IP Address"]}', #\n for new line
+            page=page,
+            width=100,
+            height=50
+        )
+        items.append(item)
+    
+    return items
+
 # Do the draw.
-def draw_network(hosts):
+def draw_main(hosts):
     ####################################
     ############ SETUP #################
     ####################################
@@ -69,37 +101,12 @@ def draw_network(hosts):
     ########### DRAW ###########
     ############################
 
-    """
-    we want to arrange the hosts in a pretty equal way
-    prefer going longer vertically when possible because there's prob lots of subnets
-    1 host: 1 row
-    2 hosts: 2 rows (1 column)
-    3 hosts: 2 rows (2 columns)
-    4 hosts: 2 rows (2 columns)
-    5 hosts: 2 rows (3 columns)
-    6 hosts: 2 rows (3 columns)
-    7 hosts: 3 rows (3 columns)
-    8 hosts: 3 rows (3 columns)
-    9 hosts: 3 rows (3 columns)
-    10 hosts: 4 rows (3 columns)
-    11 hosts: 4 rows (3 columns)
-    """
-    hosts_count = len(hosts)
+    items_count = len(hosts)
     rows = 4
-    columns = math.ceil(hosts_count / rows)
+    columns = math.ceil(items_count / rows)
 
-    items = []
-    for host in hosts[1:]: # first element is just the names (so hostname = hostname)
-        item = drawpyo.diagram.object_from_library(
-            library=custom_library,
-            obj_name='ubuntu',
-            text_format=text,
-            value=f'{host["Hostname"]}\n{host["IP Address"]}', #\n for new line
-            page=page,
-            width=100,
-            height=50
-        )
-        items.append(item)
+    # Network draw
+    items = draw_network(custom_library,text,page,hosts)
 
     ############################
     ########### FIN ############
