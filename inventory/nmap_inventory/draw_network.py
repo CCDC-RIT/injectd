@@ -3,6 +3,7 @@ import drawpyo
 import csv
 import math
 import sys
+import re
 
 # Parse the input file. Returns a list of dictionaries (one dictionary per host)
 def parse_input(file = "nmap_results.csv"):
@@ -33,6 +34,35 @@ def parse_input(file = "nmap_results.csv"):
 
     #print(hosts)
     return hosts
+
+def parse_aws_secgrp(filename="aws_secgrp_results.txt"):
+    results = []
+    with open(filename, 'r') as file:
+        # Read three lines at a time and combine them
+        lines = file.readlines()
+        combined_lines = [''.join(lines[i:i+3]).strip() for i in range(0, len(lines), 3)]
+    
+    for combined_line in combined_lines:
+        # Match security group and rule IDs
+        sg_match = re.search(r'(sg-[0-9a-f]+) has (sgr-[0-9a-f]+)', combined_line)
+        # Match port range
+        ports_match = re.search(r'Allows port (-?\d+) to port (-?\d+)', combined_line)
+        # Match IP address or placeholder
+        ip_match = re.search(r'on ([\d./]+|\[\{\}\])', combined_line)
+        # Match direction (inbound or outbound)
+        direction_match = re.search(r'(inbound|outbound)', combined_line)
+        
+        if sg_match and ports_match and ip_match and direction_match:
+            result = {
+                "name": sg_match.group(1),
+                "rule_id": sg_match.group(2),
+                "source_port": ports_match.group(1),
+                "destination_port": ports_match.group(2),
+                "ip_address": ip_match.group(1),
+                "direction": direction_match.group(1)
+            }
+            results.append(result)
+    return results
 
 def draw_network(custom_library,text,page,hosts):
     """
@@ -141,6 +171,16 @@ def main():
     else:
         file = "nmap_results_127.0.0.1.csv"
     hosts = parse_input(file)
-    draw_network(hosts)
+    draw_main(hosts)
+
+    secgrps = parse_aws_secgrp()
+    for entry in secgrps:
+        print(f"Name: {entry['name']}")
+        print(f"Rule ID: {entry['rule_id']}")
+        print(f"Source Port: {entry['source_port']}")
+        print(f"Destination Port: {entry['destination_port']}")
+        print(f"IP Address: {entry['ip_address']}")
+        print(f"Direction: {entry['direction']}")
+        print()
 
 main()
