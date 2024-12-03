@@ -64,6 +64,25 @@ def parse_aws_secgrp(filename="aws_secgrp_results.txt"):
             results.append(result)
     return results
 
+def draw_secgrp(custom_library,text,page,secgrps):
+    """
+    Given the list of secgrps from parse_aws_secgrp, draw them.
+    """
+    items = []
+    for secgrp in secgrps: # :1 first element is just the names (so hostname = hostname)
+        item = drawpyo.diagram.object_from_library(
+            library=custom_library,
+            obj_name='ubuntu',
+            text_format=text,
+            value=f'Name: {secgrp['name']}\nRule: {secgrp['rule_id']}\nSrc: {secgrp['source_port']}\nDest: {secgrp['destination_port']}\n{secgrp['ip_address']}\n{secgrp['direction']}', #\n for new line
+            page=page,
+            width=200,
+            height=100
+        )
+        items.append(item)
+    
+    return items
+
 def draw_network(custom_library,text,page,hosts):
     """
     we want to arrange the hosts in a pretty equal way
@@ -97,7 +116,7 @@ def draw_network(custom_library,text,page,hosts):
     return items
 
 # Do the draw.
-def draw_main(hosts):
+def draw_main(hosts,subfunction):
     ####################################
     ############ SETUP #################
     ####################################
@@ -131,12 +150,18 @@ def draw_main(hosts):
     ########### DRAW ###########
     ############################
 
+    spacing = 50
+    if subfunction == draw_network:
+        spacing = 100
+    elif subfunction == draw_secgrp:
+        spacing = 200
+
     items_count = len(hosts)
     rows = 4
     columns = math.ceil(items_count / rows)
 
     # Network draw
-    items = draw_network(custom_library,text,page,hosts)
+    items = subfunction(custom_library,text,page,hosts)
 
     ############################
     ########### FIN ############
@@ -153,7 +178,7 @@ def draw_main(hosts):
     row_index, col_index = 0, 0
     for index,item in enumerate(items,start=1):
         parent_container.add_object(item)
-        item.position_rel_to_parent = ((col_index * 100), (row_index * 100))
+        item.position_rel_to_parent = ((col_index * spacing), (row_index * spacing))
         # 4 items: (30, 0) (150, 0) (30, 100) (150, 100)
         row_index += 1
         if row_index > rows - 1:
@@ -171,9 +196,9 @@ def main():
     else:
         file = "nmap_results_127.0.0.1.csv"
     hosts = parse_input(file)
-    draw_main(hosts)
 
     secgrps = parse_aws_secgrp()
+    """
     for entry in secgrps:
         print(f"Name: {entry['name']}")
         print(f"Rule ID: {entry['rule_id']}")
@@ -182,5 +207,8 @@ def main():
         print(f"IP Address: {entry['ip_address']}")
         print(f"Direction: {entry['direction']}")
         print()
+    """
+    #draw_main(hosts,draw_network)
+    draw_main(secgrps,draw_secgrp)
 
 main()
