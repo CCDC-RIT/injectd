@@ -1,3 +1,0 @@
-IP Address,Hostname,OS Family,OS Gen,OS Accuracy,Protocol,Port,State,Service,Version,Product,Extra Info
-127.0.0.1,localhost,,,,tcp,631,open,ipp,2.4,CUPS,
-127.0.0.1,localhost,,,,udp,631,open|filtered,ipp,,,
